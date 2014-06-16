@@ -177,7 +177,7 @@ sub reset {
 sub elements {
     my ($self) = @_;
     my $elems = $self->{'elements'};
-    $self->_read_remainder if ( $self->{'have_read'} & (HEAD|TAIL) ) != (HEAD|TAIL);
+    $self->_read_remainder if ($self->{'have_read'} & TAIL) != TAIL;
     return @$elems;
 }
 
