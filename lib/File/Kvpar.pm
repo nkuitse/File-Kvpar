@@ -39,9 +39,9 @@ sub new {
 
 sub iter {
     my ($self) = @_;
-    my @elems = @{ $self->{'elements'} };
+    my $elems = $self->{'elements'};
     return sub {
-        return shift @elems if @elems;
+        return shift @$elems if @$elems;
         return if $self->{'have_read'} & TAIL;
         return $self->_read_one;
     }
