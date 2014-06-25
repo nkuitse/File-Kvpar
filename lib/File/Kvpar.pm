@@ -43,7 +43,7 @@ sub iter {
     return sub {
         return shift @elems if @elems;
         return if $self->{'have_read'} & TAIL;
-        return $self->_read_one;
+        return $self->read;
     }
 }
 
@@ -104,6 +104,11 @@ sub _hash2par {
     return $par . "\n";
 }
 
+sub parse {
+    my $self = shift;
+    goto &_par2hash;
+}
+
 sub _par2hash {
     my ($par) = @_;
     chomp $par;
@@ -123,7 +128,7 @@ sub _par2hash {
     return \%hash;
 }
 
-sub _read_one {
+sub read {
     my ($self) = @_;
     my $fh = $self->{'fh'};
     local $/ = '';
@@ -144,7 +149,7 @@ sub _read_one {
 sub _read_remainder {
     my ($self) = @_;
     my ($hash, @rem);
-    while ($hash = $self->_read_one) {
+    while ($hash = $self->read) {
         push @rem, $hash;
     }
     return @rem;
@@ -153,7 +158,7 @@ sub _read_remainder {
 sub head {
     my ($self) = @_;
     my $elems = $self->{'elements'};
-    return $self->_read_one if !@$elems;
+    return $self->read if !@$elems;
     return $elems->[0];
 }
 
