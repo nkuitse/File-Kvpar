@@ -3,6 +3,10 @@ package File::Kvpar;
 use strict;
 use warnings;
 
+use vars qw($VERSION);
+
+$VERSION = '0.03';
+
 use constant HEAD => 1;
 use constant TAIL => 2;
 
