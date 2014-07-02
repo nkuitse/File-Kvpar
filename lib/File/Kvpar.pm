@@ -113,6 +113,7 @@ sub _par2hash {
     my ($par) = @_;
     chomp $par;
     my %hash;
+    my $lastkey;
     foreach (split /\n/, $par) {
         if (/^[@](\S*)(?: (.+))?$/) {
             $hash{'@'} = $1 if length $1;
@@ -121,8 +122,12 @@ sub _par2hash {
         elsif (/^[#]/) {
             next;
         }
-        elsif (/^(\S+) (.*)$/) {
-            $hash{$1} = $2;
+        elsif (s/^ \.//) {
+            die qq{Improper indent: " .$_"} if !defined $lastkey;
+            $hash{$lastkey} .= $_;
+        }
+        elsif (/^(\S+)(?:\s+(.*))?$/) {
+            $hash{$lastkey = $1} = defined $2 ? $2 : '';
         }
     }
     return \%hash;
@@ -143,6 +148,27 @@ sub read {
     else {
         $self->{'have_read'} |= TAIL;
         return;
+    }
+}
+
+sub deal {
+    my ($self, $key, $dest) = @_;
+    foreach ($self->elements) {
+        my $val = $_->{$key};
+        next if !defined $val;
+        my $r = ref $val;
+        if ($r eq '') {
+            $dest->{$key} = $val;
+        }
+        elsif ($r eq 'SCALAR') {
+            ${ $dest->{$key} } = $val;
+        }
+        elsif ($r eq 'ARRAY') {
+            push @{ $dest->{$key} }, $val;
+        }
+        else {
+            die "Can't deal to $r: key = $key";
+        }
     }
 }
 
