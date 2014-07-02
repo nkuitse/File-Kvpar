@@ -11,6 +11,7 @@ my ($k, $v) = split /=/, $cond, 2;
 
 my $kvout = File::Kvpar->new(\*STDOUT);
 
+@ARGV = (\*STDIN) if !@ARGV;
 foreach my $f (@ARGV) {
     my $kv = File::Kvpar->new($f);
     foreach my $e ($kv->elements) {
