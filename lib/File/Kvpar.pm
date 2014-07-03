@@ -156,19 +156,20 @@ sub read {
 }
 
 sub deal {
-    my ($self, $key, $dest) = @_;
+    my ($self, $key, $destinations) = @_;
     foreach ($self->elements) {
         my $val = $_->{$key};
         next if !defined $val;
-        my $r = ref $val;
+        my $dest = $destinations->{$val} or next;
+        my $r = ref $dest;
         if ($r eq '') {
-            $dest->{$key} = $val;
+            $destinations->{$val} = $_;
         }
         elsif ($r eq 'SCALAR') {
-            ${ $dest->{$key} } = $val;
+            ${ $dest } = $_;
         }
         elsif ($r eq 'ARRAY') {
-            push @{ $dest->{$key} }, $val;
+            push @{ $dest }, $_;
         }
         else {
             die "Can't deal to $r: key = $key";
